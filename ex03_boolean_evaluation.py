@@ -1,6 +1,6 @@
 import sys
 
-def boolean_eval(expr: str) -> int:
+def boolean_eval(expr: str) -> bool:
     """ Time: O(n)
         Space: O(n) (stack)"""
     stack = []
@@ -9,27 +9,33 @@ def boolean_eval(expr: str) -> int:
         if char.isspace():
             continue
 
-        if char == '0' or char == '1':
-            stack.append(int(char))
+        if char == '0':
+            stack.append(False)
+        elif char == '1':
+            stack.append(True)
         
         elif char == '!':
             if len(stack) < 1:
                 raise ValueError("Invalid expression")
             a = stack.pop()
-            stack.append(1 - a)
+            stack.append(not a)
         
-        elif char in '&|^':
+        elif char in '&|^>=':
             if len(stack) < 2:
                 raise ValueError("Invalid expression")
             b = stack.pop()
             a = stack.pop()
             
             if char == '&':
-                stack.append(a & b)
+                stack.append(a and b)
             elif char == '|':
-                stack.append(a | b)
+                stack.append(a or b)
             elif char == "^":
                 stack.append(a ^ b)
+            elif char == ">":
+                stack.append((not a) or b)
+            elif char == "=":
+                stack.append(a == b)
         else:
             raise ValueError("Invalid character")
     
