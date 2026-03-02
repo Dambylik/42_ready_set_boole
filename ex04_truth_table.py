@@ -7,7 +7,7 @@ def print_truth_table(formula: str):
     n = len(letters)
 
     print('| ' + ' | '.join(letters) + ' | = |')
-    print('|---'*n + '---|')
+    print('|' + '---|' * (n + 1))
 
     for i in range(2**n):
         validation_dict = {}

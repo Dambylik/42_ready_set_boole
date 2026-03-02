@@ -8,10 +8,11 @@ class Node:
 
 
 def build_ast(expr: str):
+    """Build AST from formula - supports variables (A-Z), 0, 1, and operators"""
     stack = []
 
     for char in expr:
-        if char == '0' or char == '1':
+        if char == '0' or char == '1' or char.isupper():
             stack.append(Node(char))
 
         elif char == '!':
