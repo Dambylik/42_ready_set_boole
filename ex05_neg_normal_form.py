@@ -2,7 +2,7 @@ import sys
 from ex03_boolean_evaluation import build_ast, Node
 
 
-def normalize(node: Node) -> Node:
+def to_nnf(node: Node) -> Node:
     """Convert AST to Negation Normal Form"""
 
     # leaf
@@ -11,34 +11,34 @@ def normalize(node: Node) -> Node:
 
     # NEGATION
     if node.value == '!':
-        child = normalize(node.right)
+        child = to_nnf(node.right)
 
         # !!A → A
         if child.value == '!':
-            return normalize(child.right)
+            return to_nnf(child.right)
 
         # !(A & B) → !A | !B
         if child.value == '&':
-            return normalize(Node('|',
+            return to_nnf(Node('|',
                                   Node('!', right=child.left),
                                   Node('!', right=child.right)))
 
         # !(A | B) → !A & !B
         if child.value == '|':
-            return normalize(Node('&',
+            return to_nnf(Node('&',
                                   Node('!', right=child.left),
                                   Node('!', right=child.right)))
 
         return Node('!', right=child)
 
     # normalize children first
-    left = normalize(node.left) if node.left else None
-    right = normalize(node.right) if node.right else None
+    left = to_nnf(node.left) if node.left else None
+    right = to_nnf(node.right) if node.right else None
 
     # IMPLICATION
     # A > B → !A | B
     if node.value == '>':
-        return normalize(Node('|',
+        return to_nnf(Node('|',
                               Node('!', right=left),
                               right))
 
@@ -49,20 +49,20 @@ def normalize(node: Node) -> Node:
         right_and = Node('&',
                          Node('!', right=left),
                          Node('!', right=right))
-        return normalize(Node('|', left_and, right_and))
+        return to_nnf(Node('|', left_and, right_and))
 
     # XOR
     # A ^ B → (A & !B) | (!A & B)
     if node.value == '^':
         left_and = Node('&', left, Node('!', right=right))
         right_and = Node('&', Node('!', right=left), right)
-        return normalize(Node('|', left_and, right_and))
+        return to_nnf(Node('|', left_and, right_and))
 
     return Node(node.value, left, right)
 
 
 def ast_to_rpn(node: Node) -> str:
-    """Convert AST back to Reverse Polish Notation"""
+    """Convert AST NNF back to Reverse Polish Notation"""
     if node is None:
         return ""
     left = ast_to_rpn(node.left)
@@ -73,13 +73,13 @@ def ast_to_rpn(node: Node) -> str:
 
 def negation_normal_form(formula: str) -> str:
     root = build_ast(formula)
-    nnf_root = normalize(root)
+    nnf_root = to_nnf(root)
     return ast_to_rpn(nnf_root)
 
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python ex05_negation_normal_form.py 'formula'")
+        print("Usage: python ex05_neg_normal_form.py 'formula'")
         sys.exit(1)
 
     formula = sys.argv[1]
@@ -88,8 +88,12 @@ def main():
         print(result)
     except ValueError as e:
         print("Error:", e)
-        sys.exit(1)
-
+        sys.exit(1) 
 
 if __name__ == "__main__":
     main()
+
+
+#tests = ["AB&!", "AB|!", "AB>", "AB=", "AB|C&!"]
+#for t in tests:
+#    print(f"{t} -> {negation_normal_form(t)}")       
