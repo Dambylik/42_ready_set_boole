@@ -113,3 +113,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+#tests = ["10&", "10|", "11>", "10=", "1011||="]
+#for t in tests:
+#    print(f"{t} -> {boolean_eval(t)}")

@@ -1,69 +1,36 @@
 import sys
 from ex03_boolean_evaluation import Node, build_ast
+from ex05_neg_normal_form import to_nnf, ast_to_rpn
+
 
 def to_cnf(node: Node) -> Node:
-    """Convert AST to Conjunctive Normal Form"""
-    if node is None:
-        return None
 
-    # Переменная или константа
-    if node.value.isupper() or node.value in '01':
-        return Node(node.value)
+    if node.left is None and node.right is None:
+        return node
 
-    # NEGATION
-    if node.value == '!':
-        child = to_cnf(node.right)
-        # DE MORGAN
-        if child.value == '&':
-            left = Node('!', right=child.left)
-            right = Node('!', right=child.right)
-            return Node('|', to_cnf(left), to_cnf(right))
-        elif child.value == '|':
-            left = Node('!', right=child.left)
-            right = Node('!', right=child.right)
-            return Node('&', to_cnf(left), to_cnf(right))
-        elif child.value == '!':  # двойное отрицание
-            return to_cnf(child.right)
-        else:
-            return Node('!', right=child)
+    left = to_cnf(node.left) if node.left else None
+    right = to_cnf(node.right) if node.right else None
 
-    # Конъюнкция или дизъюнкция
-    if node.value in '&|':
-        left = to_cnf(node.left)
-        right = to_cnf(node.right)
+    # distribute OR over AND
+    if node.value == '|':
+        if left.value == '&':
+            return Node('&',
+                        to_cnf(Node('|', left.left, right)),
+                        to_cnf(Node('|', left.right, right)))
 
-        if node.value == '|':
-            # распределение OR над AND
-            if left.value == '&':
-                a = left.left
-                b = left.right
-                return Node('&', to_cnf(Node('|', a, right)), to_cnf(Node('|', b, right)))
-            elif right.value == '&':
-                a = right.left
-                b = right.right
-                return Node('&', to_cnf(Node('|', left, a)), to_cnf(Node('|', left, b)))
-        return Node(node.value, left, right)
+        if right.value == '&':
+            return Node('&',
+                        to_cnf(Node('|', left, right.left)),
+                        to_cnf(Node('|', left, right.right)))
 
-    return node
+    return Node(node.value, left, right)
 
 
-def cnf_to_rpn(node: Node) -> str:
-    """Convert AST CNF back to Reverse Polish Notation"""
-    if node is None:
-        return ""
-    if node.value in '!&|':
-        if node.value == '!':
-            return cnf_to_rpn(node.right) + '!'
-        else:
-            return cnf_to_rpn(node.left) + cnf_to_rpn(node.right) + node.value
-    else:
-        return node.value
-
-
-def conjunctive_normal_form_rpn(expr: str) -> str:
+def conjunctive_normal_form(expr: str) -> str:
     root = build_ast(expr)
-    cnf_root = to_cnf(root)
-    return cnf_to_rpn(cnf_root)
+    nnf_root = to_nnf(root)
+    cnf_root = to_cnf(nnf_root)
+    return ast_to_rpn(cnf_root)
 
 
 def main():
@@ -72,12 +39,14 @@ def main():
         sys.exit(1)
 
     formula = sys.argv[1]
+
     try:
-        result = conjunctive_normal_form_rpn(formula)
+        result = conjunctive_normal_form(formula)
         print(result)
     except ValueError as e:
         print("Error:", e)
-        sys.exit(1) 
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
