@@ -89,9 +89,10 @@ Understand and apply rewriting rules.
 
 ### Key Equivalences
 
+```
 Implication: A > B ≡ ¬A ∨ B
 Equivalence: A = B ≡ (A ∧ B) ∨ (¬A ∧ ¬B)
-
+```
 
 > [!IMPORTANT]
 > These rules are required before converting to normal forms.
@@ -111,11 +112,14 @@ A formula is in NNF if:
 
 ### Rewrite Rules
 
+```
 De Morgan: 
-!(A | B) → !A & !B
-!(A & B) → !A | !B
+  !(A | B) → !A & !B
+  !(A & B) → !A | !B
 
-Double negation: !!A → A
+Double negation: 
+  !!A → A
+```
 
 > [!NOTE]
 > NNF simplifies CNF conversion.
@@ -128,13 +132,15 @@ Double negation: !!A → A
 Convert NNF into CNF.
 
 ## Definition
+```
 CNF is: (Clause1) & (Clause2) & ...
 Each clause: Literal | Literal | ...
-
+```
 
 ### Core Rule
+```
 Distribute OR over AND: A | (B & C) → (A | B) & (A | C)
-
+```
 
 > [!WARNING]
 > CNF conversion can cause exponential growth.
@@ -172,9 +178,11 @@ Logical reasoning principles:
 - Hypothetical Syllogism
 
 Example:
+```
 A
 A → B
 ∴ B
+```
 
 Used in automated reasoning systems.
 
@@ -200,7 +208,7 @@ Logical operators correspond to set operations:
 ## Goal
 Generate all subsets of a set.
 
-If a set has `n` elements: |P(S)| = 2ⁿ
+If a set has `n` elements: `|P(S)| = 2ⁿ`
 
 ### Method
 Use bitmask enumeration.
@@ -271,8 +279,9 @@ Implement inverse mapping: f⁻¹(f(x, y)) = (x, y)
 ---
 
 # Global Pipeline
+```
 RPN → AST → NNF → CNF → SAT
-
+```
 
 Set algebra extends logical semantics.  
 Morton encoding applies bit logic to geometry.
