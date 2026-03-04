@@ -1,205 +1,304 @@
-## Ready Set Boole
+# Ready Set Boole
 
-This project is a collection of small exercises around **bitwise operations**, **boolean logic in Reverse Polish Notation (RPN)**, **normal forms**, **satisfiability**, **sets**, and **space-filling curves**.  
-Each file `exNN_*.py` is a self‑contained program with a `main()` you can run from the command line.
-
----
-
-Expressions are always given in **RPN** (Reverse Polish Notation), e.g. `AB&` means \(A \land B\).
+> [!IMPORTANT]
+> All formulas are written in **Reverse Polish Notation (RPN)**.  
+> Evaluation is stack-based unless otherwise specified.
 
 ---
 
-## Exercises Overview
+# Exercise 00 – Boolean Evaluation
 
-### ex00_adder.py — Bitwise Adder (u32)
+## Goal
+Evaluate a propositional formula written in RPN.
 
-**Goal**: Implement addition without using `+`, only bitwise operations.
+## Supported Operators
 
-- `adder(a, b)`:
-  - Uses `^` for sum without carry.
-  - Uses `(a & b) << 1` for the carry.
-  - Repeats until carry is zero, then masks the result with `U32_MAX` so it stays in the 32‑bit unsigned range.
-- `main()`:
-  - Parses two integers from CLI.
-  - Checks they are in \([0, 2^{32}-1]\).
-  - Prints the result.
+| Symbol | Meaning |
+|--------|---------|
+| `&` | AND |
+| `|` | OR |
+| `!` | NOT |
+| `>` | Implication |
+| `=` | Equivalence |
 
----
+> [!NOTE]
+> Evaluation uses a stack.  
+> Time complexity: **O(n)**
 
-### ex01_multiplier.py — Bitwise Multiplier (u32)
-
-**Goal**: Multiply two unsigned 32‑bit integers using only shifting and the `adder` from ex00.
-
-- `multiplier(a, b)`:
-  - Interprets `b` in binary.
-  - If the current least significant bit of `b` is `1`, adds `a` to `result`.
-  - Shifts `a` left (×2) and `b` right (÷2) each iteration.
-  - Masks intermediate results to stay in u32 range.
-- `main()`:
-  - Same argument parsing and u32 checks as `ex00_adder.py`.
+### Core Idea
+1. Read left → right.
+2. Push operands.
+3. When operator appears:
+   - Pop operands.
+   - Apply operation.
+   - Push result.
 
 ---
 
-### ex02_gray_code.py — Gray Code
+# Exercise 01 – Truth Table
 
-**Goal**: Compute the Gray code of a number.
+## Goal
+Generate the full truth table of a formula.
 
-- `gray_code(n)`:
-  - Returns `n ^ (n >> 1)`.
-- `main()`:
-  - Parses one u32 integer.
-  - Prints its Gray code.
+> [!IMPORTANT]
+> If the formula has `n` variables → there are **2ⁿ rows**.
 
----
+### Key Concepts
+- Variable extraction
+- Binary enumeration
+- Repeated evaluation
 
-### ex03_boolean_evaluation.py — Boolean RPN Evaluator + AST
-
-**Goal**: Evaluate boolean formulas written in RPN and build an AST.
-
-- `Node`:
-  - Simple binary tree node with `value`, `left`, `right`.
-- `build_ast(expr)`:
-  - Reads expression left‑to‑right.
-  - Pushes operands (`0`, `1`, or variables `A`–`Z`) onto a stack.
-  - Unary `!` pops one child, binary operators `&|^>=` pop two children.
-  - The final stack element is the AST root.
-- `boolean_eval(expr)`:
-  - Similar stack machine, but values are booleans (`False` for `0`, `True` for `1`).
-  - Implements:
-    - `!` = NOT
-    - `&` = AND
-    - `|` = OR
-    - `^` = XOR
-    - `>` = implication (\(\neg a \lor b\))
-    - `=` = equivalence (\(a == b\))
-- `main()`:
-  - Validates characters.
-  - Prints the boolean result and a textual representation of the AST.
+Time complexity: **O(n · 2ⁿ)**
 
 ---
 
-### ex04_truth_table.py — Truth Table Generator
+# Exercise 02 – AST Construction
 
-**Goal**: Print the full truth table of a boolean formula in RPN.
+## Goal
+Build an Abstract Syntax Tree (AST) from RPN.
 
-- `print_truth_table(formula)`:
-  - Extracts all uppercase letters (variables) and sorts them.
-  - For each integer `i` from `0` to `2^n - 1`:
-    - Interprets bits of `i` as a truth assignment to the variables.
-    - Builds a new RPN string where each variable becomes `'0'` or `'1'`.
-    - Calls `boolean_eval()` to get the result.
-    - Prints the row as `0/1` values with the final result.
-- `main()`:
-  - Validates formula characters.
-  - Calls `print_truth_table`.
+### Node Structure
+- `value`
+- `left`
+- `right`
 
+> [!TIP]
+> Leaves = variables  
+> Internal nodes = operators
 
----
-
-### ex05_neg_normal_form.py — Negation Normal Form (NNF)
-
-**Goal**: Convert a boolean formula to **Negation Normal Form**, where:
-- Only `!`, `&`, and `|` remain.
-- Negation appears only directly in front of variables.
-
-Key functions:
-
-- `to_nnf(node)`:
-  - Works over the AST from `build_ast`.
-  - Pushes negations inward using logical equivalences:
-    - `!!A → A`
-    - `!(A & B) → !A | !B`
-    - `!(A | B) → !A & !B`
-    - `A > B → !A | B`
-    - `A = B → (A & B) | (!A & !B)`
-    - `A ^ B → (A & !B) | (!A & B)`
-  - Recursively normalizes children.
-- `ast_to_rpn(node)`:
-  - Converts the normalized AST back into an RPN string.
-- `negation_normal_form(formula)`:
-  - Composes `build_ast` → `to_nnf` → `ast_to_rpn`.
-- `main()`:
-  - Reads a formula and prints its NNF in RPN.
-
-Logic: symbolic AST rewriting using standard logical equivalences.
+The AST becomes the base structure for normalization and transformations.
 
 ---
 
-### ex06_conj_normal_form.py — Conjunctive Normal Form (CNF)
+# Exercise 03 – Boolean Evaluation from AST
 
-**Goal**: Convert a boolean formula to **Conjunctive Normal Form** (AND of ORs).
+## Goal
+Evaluate a formula using recursive tree traversal.
 
-- `to_cnf(node)`:
-  - Assumes input is already NNF.
-  - Recursively distributes `|` over `&`:
-    - `(A & B) | C → (A | C) & (B | C)`
-    - `A | (B & C) → (A | B) & (A | C)`
-- `conjunctive_normal_form(expr)`:
-  - Builds AST, applies `to_nnf` from ex05, then `to_cnf`, then `ast_to_rpn`.
-- `main()`:
-  - Reads formula and prints its CNF in RPN.
-
-Logic: CNF is obtained by first pushing negations down (NNF) and then distributing OR over AND.
+### Why?
+- Cleaner architecture
+- Enables rewriting (NNF, CNF)
+- Separation of parsing and evaluation
 
 ---
 
-### ex07_sat.py — SAT Solver on CNF
+# Exercise 04 – Logical Equivalences
 
-**Goal**: Decide if a boolean formula is **satisfiable** (there exists an assignment that makes it true).
+## Goal
+Understand and apply rewriting rules.
 
-- Reuses:
-  - `build_ast` from ex03
-  - `to_nnf` from ex05
-  - `to_cnf` from ex06
-- Steps:
-  1. Build AST, convert to NNF, then CNF.
-  2. `extract_clauses(node)`:
-     - Interprets the CNF AST as a conjunction of disjunctions.
-     - Returns a list of clauses; each clause is a list of literals.
-  3. `extract_literals(node)`:
-     - Breaks a clause into literals like `('!', 'A')` or `(None, 'B')`.
-  4. `evaluate_clause(clause, assignment)`:
-     - Clause is satisfied if at least one literal is true under the assignment.
-  5. `is_satisfiable(expr)`:
-     - Enumerates all boolean assignments (bitmask over variables).
-     - Checks if all clauses are satisfied for some assignment.
-- `main()`:
-  - Reads a formula string and prints `True` or `False`.
+### Key Equivalences
 
-Logic: brute‑force SAT solver working on CNF with bitmask enumeration.
+Implication: A > B ≡ ¬A ∨ B
+Equivalence: A = B ≡ (A ∧ B) ∨ (¬A ∧ ¬B)
+
+
+> [!IMPORTANT]
+> These rules are required before converting to normal forms.
 
 ---
 
-### ex08_powerset.py — Powerset via Bitmasks
+# Exercise 05 – Negation Normal Form (NNF)
 
-**Goal**: Compute the powerset of a list of integers.
+## Goal
+Transform formula into **NNF**.
 
-- `powerset(set_)`:
-  - Deduplicates and sorts the elements.
-  - For each mask from `0` to `2^n - 1`, builds one subset by including the `i`‑th element when bit `i` of the mask is `1`.
-- `main()`:
-  - Parses a space‑separated list of integers from the CLI argument.
-  - Prints each subset.
+## Definition
+A formula is in NNF if:
+- Only `&` and `|`
+- Negations apply only to variables
+- No `>` or `=`
 
-Logic: same bitmask enumeration idea used in truth tables and SAT.
+### Rewrite Rules
+
+De Morgan: 
+!(A | B) → !A & !B
+!(A & B) → !A | !B
+
+Double negation: !!A → A
+
+> [!NOTE]
+> NNF simplifies CNF conversion.
 
 ---
 
-### ex09_set_evaluation.py — Set Expression Evaluation in RPN
+# Exercise 06 – Conjunctive Normal Form (CNF)
 
-**Goal**: Evaluate RPN formulas over **sets of integers**, using set operations analogous to boolean operators.
+## Goal
+Convert NNF into CNF.
 
-- `eval_set(formula, sets)`:
-  - Converts input lists into Python `set`s.
-  - Builds the **universe** as the union of all sets.
-  - Uses a stack:
-    - Variables `A`, `B`, `C`, … refer to sets by index.
-    - `!A` → complement wrt universe: `universe - A`.
-    - `&` → intersection.
-    - `|` → union.
-    - `>` → implication: `(universe - A) | B`.
-    - `=` → equivalence: `(A & B) | (!A & !B)` using set operations.
-  - Returns the resulting set as a **sorted list** of integers.
-- `main()`:
-  - Example usage:
+## Definition
+CNF is: (Clause1) & (Clause2) & ...
+Each clause: Literal | Literal | ...
 
+
+### Core Rule
+Distribute OR over AND: A | (B & C) → (A | B) & (A | C)
+
+
+> [!WARNING]
+> CNF conversion can cause exponential growth.
+
+---
+
+# Exercise 07 – SAT Solver
+
+## Goal
+Determine if a formula is satisfiable.
+
+## Definition
+SAT asks:
+
+> Does there exist an assignment making the formula true?
+
+### Method
+- Extract variables
+- Try all 2ⁿ assignments
+- Evaluate formula
+
+> [!IMPORTANT]
+> SAT is NP-complete.  
+> Brute force complexity: **O(2ⁿ)**
+
+---
+
+# Interlude 01 – Rules of Inference
+
+Logical reasoning principles:
+
+- Modus Ponens
+- Modus Tollens
+- Resolution
+- Hypothetical Syllogism
+
+Example:
+A
+A → B
+∴ B
+
+Used in automated reasoning systems.
+
+---
+
+# Interlude 02 – Set Theory
+
+Logical operators correspond to set operations:
+
+| Logic | Set |
+|--------|------|
+| A ∧ B | A ∩ B |
+| A ∨ B | A ∪ B |
+| ¬A | U \ A |
+
+> [!NOTE]
+> Universe = union of all sets.
+
+---
+
+# Exercise 08 – Powerset
+
+## Goal
+Generate all subsets of a set.
+
+If a set has `n` elements: |P(S)| = 2ⁿ
+
+### Method
+Use bitmask enumeration.
+
+Time complexity: **O(n · 2ⁿ)**
+
+> [!TIP]
+> First subset is always `[]` (empty set).
+
+---
+
+# Exercise 09 – Set Evaluation
+
+## Goal
+Evaluate logical formulas on sets.
+
+Variables represent sets.
+
+### Operator Mapping
+
+| Logic | Set Operation |
+|--------|---------------|
+| `&` | Intersection |
+| `|` | Union |
+| `!` | Complement |
+| `>` | (¬A ∪ B) |
+| `=` | Equivalence |
+
+> [!IMPORTANT]
+> Complement is relative to the universe.
+
+---
+
+# Exercise 10 – Space-Filling Curve (Morton Code)
+
+## Goal
+Map (x, y) ∈ [0..65535]² → float ∈ [0,1].
+
+### Method
+1. Interleave bits of x and y.
+2. Build 32-bit Morton code.
+3. Normalize: value = morton_code / (2³² − 1)
+
+> [!NOTE]
+> Also known as **Z-order curve**.
+
+Properties:
+- Preserves spatial locality
+- Used in spatial indexing
+
+---
+
+# Exercise 11 – Reverse Mapping
+
+## Goal
+Implement inverse mapping: f⁻¹(f(x, y)) = (x, y)
+
+### Method
+- Convert float → 32-bit integer
+- De-interleave bits
+- Reconstruct x and y
+
+> [!IMPORTANT]
+> The mapping is bijective on:
+>
+> `[0..65535] × [0..65535]`
+
+---
+
+# Global Pipeline
+RPN → AST → NNF → CNF → SAT
+
+
+Set algebra extends logical semantics.  
+Morton encoding applies bit logic to geometry.
+
+---
+
+# Complexity Summary
+
+| Exercise | Complexity |
+|-----------|------------|
+| Eval | O(n) |
+| Truth Table | O(n · 2ⁿ) |
+| SAT | O(2ⁿ) |
+| Powerset | O(n · 2ⁿ) |
+| CNF | Worst-case exponential |
+| Morton Map | O(1) |
+
+---
+
+# Concepts Covered
+
+- Boolean algebra
+- Logical equivalence
+- Normal forms (NNF, CNF)
+- SAT problem
+- Set theory
+- Bit manipulation
+- Space-filling curves
+- Algorithmic complexity
