@@ -2,7 +2,9 @@ import sys
 U32_MAX = 0xFFFFFFFF
 
 def gray_code(n: int) -> int:
-    """The complexity of this function is O(1)"""
+    """The complexity of this function is O(1)
+    Formula : gray = n XOR (n >> 1)
+    """
     return n ^ (n >> 1)
 
 
@@ -25,6 +27,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-#tests = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
-#for t in tests:
-#    print(f"{t} -> {gray_code(t)}")
+# tests = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+# for t in tests:
+#    print(f"{t} -> {gray_code(int(t))}")

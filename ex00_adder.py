@@ -1,5 +1,5 @@
 import sys
-U32_MAX = 0xFFFFFFFF
+U32_MAX = 0xFFFFFFFF #(32 bit integer : in binary conversion it will be (32 digits of 1) or (2^32 - 1))
 
 def adder(a: int, b: int) -> int:
    """The complexity of this function is O(1)"""
@@ -8,7 +8,7 @@ def adder(a: int, b: int) -> int:
       carry = (a & b) << 1 #carry + shift in 1 bit
       a = sum_
       b = carry
-   return a & U32_MAX
+   return a
 
 
 def main():

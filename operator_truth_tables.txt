@@ -1,0 +1,94 @@
+AND (&)
+┌───┬───┬─────┐
+│ A │ B │ A&B │
+├───┼───┼─────┤
+│ 0 │ 0 │  0  │
+│ 0 │ 1 │  0  │
+│ 1 │ 0 │  0  │
+│ 1 │ 1 │  1  │  ← Only true when BOTH are true
+└───┴───┴─────┘
+
+
+OR (|)
+┌───┬───┬─────┐
+│ A │ B │ A|B │
+├───┼───┼─────┤
+│ 0 │ 0 │  0  │
+│ 0 │ 1 │  1  │  ← True when AT LEAST ONE is true
+│ 1 │ 0 │  1  │  ←
+│ 1 │ 1 │  1  │  ←
+└───┴───┴─────┘
+
+
+XOR (^)
+┌───┬───┬─────┐
+│ A │ B │ A^B │
+├───┼───┼─────┤
+│ 0 │ 0 │  0  │  ← Same values
+│ 0 │ 1 │  1  │  ← True when EXACTLY ONE is true
+│ 1 │ 0 │  1  │  ← Different
+│ 1 │ 1 │  0  │  ← Same values
+└───┴───┴─────┘
+Pattern: XOR is true when inputs DIFFER
+
+
+NOT (!)
+┌───┬─────┐
+│ A │ !A  │
+├───┼─────┤
+│ 0 │  1  │  ← Flips the value
+│ 1 │  0  │  ←
+└───┴─────┘
+
+
+IMPLICATION (>)
+┌───┬───┬─────┐
+│ A │ B │ A>B │
+├───┼───┼─────┤
+│ 0 │ 0 │  1  │  ← False implies anything
+│ 0 │ 1 │  1  │  ←
+│ 1 │ 0 │  0  │  ← Only false when true implies false
+│ 1 │ 1 │  1  │
+└───┴───┴─────┘
+"If A then B" = "¬A ∨ B"
+
+
+EQUIVALENCE (=)
+┌───┬───┬─────┐
+│ A │ B │ A=B │
+├───┼───┼─────┤
+│ 0 │ 0 │  1  │  ← Same values = true
+│ 0 │ 1 │  0  │
+│ 1 │ 0 │  0  │
+│ 1 │ 1 │  1  │  ← Same values = true
+└───┴───┴─────┘
+"A equals B" = "(A ∧ B) ∨ (¬A ∧ ¬B)"
+
+"------------------------------------------------------------------"
+
+Negation Normal Form
+
+1. Double Negation Elimination:
+   !!A → A
+
+2. De Morgan's Laws:
+   !(A & B) → !A | !B
+   !(A | B) → !A & !B
+
+3. Implication Elimination:
+   A > B → !A | B
+
+4. Equivalence Elimination:
+   A = B → (A & B) | (!A & !B)
+
+5. XOR Elimination:
+   A ^ B → (A & !B) | (!A & B)
+
+"------------------------------------------------------------------"
+
+Conjunctive Normal Form
+
+1. Distributive Law:
+   A | (B & C) → (A | B) & (A | C)
+   This is applied recursively until all ORs are inside, ANDs are outside.
+

@@ -1,5 +1,5 @@
 import sys
-from ex03_boolean_evaluation import build_ast
+from ex03_boolean_evaluation import build_ast, print_tree
 from ex05_neg_normal_form import to_nnf
 from ex06_conj_normal_form import to_cnf
 
@@ -39,11 +39,10 @@ def evaluate_clause(clause, assignment):
 
 def is_satisfiable(expr: str) -> bool:
     root = build_ast(expr)
+    # print_tree(root)
     nnf_root = to_nnf(root)
     cnf_root = to_cnf(nnf_root)
-
     clauses = extract_clauses(cnf_root)
-
     variables = sorted({var for clause in clauses for _, var in clause})
     n = len(variables)
 
@@ -51,10 +50,9 @@ def is_satisfiable(expr: str) -> bool:
         assignment = {}
         for i, var in enumerate(variables):
             assignment[var] = bool((mask >> i) & 1)
-
         if all(evaluate_clause(cl, assignment) for cl in clauses):
             return True
-
+        
     return False
 
 
@@ -75,6 +73,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-#tests = ["AB|", "AB&", "AA!&", "AA^"]
-#for t in tests:
-#    print(f"{t} -> {evaluate_clause(t)}")
+# tests = ["AB|", "AB&", "AA!&", "AA^"]
+# for t in tests:
+#    print(f"{t} -> {is_satisfiable(t)}")

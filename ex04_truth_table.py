@@ -41,6 +41,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-#tests = ["AB&C|""]
-#for t in tests:
+# tests = ["AB&C|", "AB&C|D|"]
+# for t in tests:
 #    print(f"{t} -> {print_truth_table(t)}")

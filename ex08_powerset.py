@@ -6,7 +6,7 @@ def powerset(set_: list[int]) -> list[list[int]]:
     n = len(elements)
     result = []
 
-    for mask in range(1 << n): #Counts from 0 to 2^n - 1.
+    for mask in range(1 << n):
         subset = []
         for i in range(n):
             if (mask >> i) & 1: #If bit i is 1 → include element at index i.
@@ -33,3 +33,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# tests = [[1, 2, 3]]
+# for t in tests:
+#    print(f"{t} -> {powerset(t)}")

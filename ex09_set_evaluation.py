@@ -76,7 +76,7 @@ def main():
 if __name__ == "__main__":
     main()
 
-# ================= TESTS =================
+
 """
 tests = [
     # (formula, sets)

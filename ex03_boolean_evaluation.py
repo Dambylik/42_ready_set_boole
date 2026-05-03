@@ -8,7 +8,7 @@ class Node:
 
 
 def build_ast(expr: str):
-    """Build AST from formula - supports variables (A-Z), 0, 1, and operators"""
+    """Build AST from formula - supports variables (A-Z), 0, 1 and operators"""
     stack = []
 
     for char in expr:
@@ -114,6 +114,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-#tests = ["10&", "10|", "11>", "10=", "1011||="]
-#for t in tests:
+# tests = ["10&", "10|", "11>", "10=", "1011||="]
+# for t in tests:
 #    print(f"{t} -> {boolean_eval(t)}")

@@ -4,14 +4,16 @@ U32_MAX = 0xFFFFFFFF
 
 
 def multiplier(a: int, b: int) -> int:
-    """The complexity of this function is O(1)"""
+    """The complexity of this function is O(1)
+        Maximum 32 iterations for 32-bit integers
+    """
     result = 0
     while b!= 0:
         if (b & 1) == 1:
             result = adder(result, a)
-        a = (a << 1) & U32_MAX
+        a = (a << 1)
         b = b >> 1
-    return result & U32_MAX
+    return result
 
 
 def main():
