@@ -2,7 +2,7 @@ U16_MAX = 2**16 - 1
 U32_MAX = 2**32 - 1
 
 def map_coordinates(x: int, y: int) -> float:
-    if not (0 <= x <= U32_MAX and 0 <= y <= U32_MAX):
+    if not (0 <= x <= U16_MAX and 0 <= y <= U16_MAX):
         raise ValueError("x and y must be between 0 and 65535")
     
     morton_code = 0

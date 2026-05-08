@@ -1,10 +1,7 @@
 import sys
 
 def eval_set(formula: str, sets: list[list[int]]) -> list[int]:
-    # Convert input to real sets
     real_sets = [set(s) for s in sets]
-
-    # Universe = union of all sets
     universe = set()
     for s in real_sets:
         universe |= s
@@ -77,16 +74,15 @@ if __name__ == "__main__":
     main()
 
 
-"""
-tests = [
-    # (formula, sets)
-    ("AB&", [[0,1,2], [0,3,4]]),
-    ("AB|", [[0,1,2], [3,4,5]]),
-    ("A!",  [[0,1,2]], []),
-]
+# tests = [
+#     ("AB&", [[0,1,2], [0,3,4]]),
+#     ("AB|", [[0,1,2], [3,4,5]]),
+#     ("A!", [[0,1,2]]),
+# ]
 
-for formula, sets in tests:
-    result = eval_set(formula, sets)
-    print(f"{formula} with {sets}") 
-    print(f"Result:      {result}")
-"""
+# for formula, sets in tests:
+#     result = eval_set(formula, sets)
+    
+#     print(f"{formula} with {sets}") 
+#     print(f"Result:{result}")
+#     print("------------------\n")
