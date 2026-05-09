@@ -42,7 +42,8 @@ def is_satisfiable(expr: str) -> bool:
     # print_tree(root)
     nnf_root = to_nnf(root)
     cnf_root = to_cnf(nnf_root)
-    clauses = extract_clauses(cnf_root)
+    # print_tree(cnf_root)
+    clauses = extract_clauses(cnf_root)    
     variables = sorted({var for clause in clauses for _, var in clause})
     n = len(variables)
 
@@ -50,6 +51,7 @@ def is_satisfiable(expr: str) -> bool:
         assignment = {}
         for i, var in enumerate(variables):
             assignment[var] = bool((mask >> i) & 1)
+            # print(assignment)
         if all(evaluate_clause(cl, assignment) for cl in clauses):
             return True
         

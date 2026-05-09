@@ -8,7 +8,7 @@ class Node:
 
 
 def build_ast(expr: str):
-    """Build AST from formula - supports variables (A-Z), 0, 1 and operators"""
+    """Build Abstract Syntax Tree from formula"""
     stack = []
 
     for char in expr:
@@ -33,7 +33,6 @@ def build_ast(expr: str):
 
     if len(stack) != 1:
         raise ValueError("Invalid expression")
-
     return stack[0]
 
 
@@ -83,7 +82,6 @@ def boolean_eval(expr: str) -> bool:
     
     if len(stack) != 1:
         raise ValueError("invalid RPN (two operands, no operator)")
-    
     return stack[0]
 
 
@@ -93,12 +91,12 @@ def main():
         sys.exit(1)
     
     allowed = set("01!&|^>=")
+    expr = sys.argv[1]
     try:
-        for char in sys.argv[1]:
+        for char in expr:
             if char not in allowed:
                 raise ValueError("Invalid character")
 
-        expr = sys.argv[1]
         result = boolean_eval(expr)
         print("RPN eval:", result)
         ast_tree = build_ast(expr)

@@ -1,12 +1,10 @@
 from ex00_adder import adder
 import sys
-U32_MAX = 0xFFFFFFFF
+U32_MAX = 2**32 - 1
 
 
 def multiplier(a: int, b: int) -> int:
-    """The complexity of this function is O(1)
-        Maximum 32 iterations for 32-bit integers
-    """
+    """The complexity of this function is O(1)"""
     result = 0
     while b!= 0:
         if (b & 1) == 1:
@@ -27,7 +25,7 @@ def main():
         print("Error: input must be an integer")
         sys.exit(1)
     if not (0 <= a <= U32_MAX and 0 <= b <= U32_MAX):
-        print("Error: inputs must be u32 (0 <= n <= 2^32 - 1)")
+        print("Error: inputs must be u32")
         sys.exit(1)
 
     result = multiplier(a, b)

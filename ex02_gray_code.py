@@ -1,10 +1,8 @@
 import sys
-U32_MAX = 0xFFFFFFFF
+U32_MAX = 2**32 - 1
 
 def gray_code(n: int) -> int:
-    """The complexity of this function is O(1)
-    Formula : gray = n XOR (n >> 1)
-    """
+    """Formula : gray = n XOR (n >> 1)"""
     return n ^ (n >> 1)
 
 
@@ -18,7 +16,7 @@ def main():
         print("Error: input must be an integer")
         sys.exit(1)
     if n < 0 or n > U32_MAX:
-        print("Error: input must be a u32 (0 <= n <= 2^32 - 1)")
+        print("Error: input must be a u32")
         sys.exit(1)
     result = gray_code(n)
     print(result)

@@ -54,6 +54,7 @@ def negation_normal_form(formula: str) -> str:
     root = build_ast(formula)
     # print_tree(root)
     nnf_root = to_nnf(root)
+    # print_tree(nnf_root)
     return ast_to_rpn(nnf_root)
 
 

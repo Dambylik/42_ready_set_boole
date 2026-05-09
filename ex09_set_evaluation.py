@@ -54,7 +54,6 @@ def main():
         sys.exit(1)
 
     formula = sys.argv[1]
-
     try:
         sets = []
         for arg in sys.argv[2:]:
@@ -69,6 +68,7 @@ def main():
     except ValueError as e:
         print("Error:", e)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

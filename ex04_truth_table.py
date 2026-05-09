@@ -18,8 +18,9 @@ def print_truth_table(formula: str):
         expr_eval = ''.join(validation_dict.get(c, c) for c in formula)
         result = boolean_eval(expr_eval)
         row = [validation_dict[l] for l in letters]
+        
         print('| ' + ' | '.join(row) + ' | ' + str(int(result)) + ' |')
-
+        
 
 def main():
     if len(sys.argv) != 2:
@@ -43,4 +44,5 @@ if __name__ == '__main__':
 
 # tests = ["AB&C|", "AB&C|D|"]
 # for t in tests:
-#    print(f"{t} -> {print_truth_table(t)}")
+#    print(f"\nFormula: {t}")
+#    print_truth_table(t)

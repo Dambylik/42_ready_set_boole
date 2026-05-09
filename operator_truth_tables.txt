@@ -1,4 +1,4 @@
-AND (&)
+AND (&) = Conjunction
 ┌───┬───┬─────┐
 │ A │ B │ A&B │
 ├───┼───┼─────┤
@@ -9,7 +9,7 @@ AND (&)
 └───┴───┴─────┘
 
 
-OR (|)
+OR (|) = Disjunction
 ┌───┬───┬─────┐
 │ A │ B │ A|B │
 ├───┼───┼─────┤
@@ -20,7 +20,7 @@ OR (|)
 └───┴───┴─────┘
 
 
-XOR (^)
+XOR (^) = Exclusive disjunction
 ┌───┬───┬─────┐
 │ A │ B │ A^B │
 ├───┼───┼─────┤
@@ -32,7 +32,7 @@ XOR (^)
 Pattern: XOR is true when inputs DIFFER
 
 
-NOT (!)
+NOT (!) = Negation
 ┌───┬─────┐
 │ A │ !A  │
 ├───┼─────┤
@@ -41,7 +41,7 @@ NOT (!)
 └───┴─────┘
 
 
-IMPLICATION (>)
+IMPLICATION (>) = Material condition
 ┌───┬───┬─────┐
 │ A │ B │ A>B │
 ├───┼───┼─────┤
@@ -53,7 +53,7 @@ IMPLICATION (>)
 "If A then B" = "¬A ∨ B"
 
 
-EQUIVALENCE (=)
+EQUIVALENCE (=) = Logical equivalence
 ┌───┬───┬─────┐
 │ A │ B │ A=B │
 ├───┼───┼─────┤

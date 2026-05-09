@@ -28,9 +28,10 @@ def to_cnf(node: Node) -> Node:
 
 def conjunctive_normal_form(expr: str) -> str:
     root = build_ast(expr)
-    #print_tree(root)
+    # print_tree(root)
     nnf_root = to_nnf(root)
     cnf_root = to_cnf(nnf_root)
+    # print_tree(cnf_root)
     return ast_to_rpn(cnf_root)
 
 
@@ -40,7 +41,6 @@ def main():
         sys.exit(1)
 
     formula = sys.argv[1]
-
     try:
         result = conjunctive_normal_form(formula)
         print(result)

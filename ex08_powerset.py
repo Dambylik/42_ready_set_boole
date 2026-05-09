@@ -9,7 +9,7 @@ def powerset(set_: list[int]) -> list[list[int]]:
     for mask in range(1 << n):
         subset = []
         for i in range(n):
-            if (mask >> i) & 1: #If bit i is 1 → include element at index i.
+            if (mask >> i) & 1:
                 subset.append(elements[i])
         result.append(subset)
 
