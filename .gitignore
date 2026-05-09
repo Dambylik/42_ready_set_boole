@@ -3,4 +3,5 @@ venv/
 __pycache__/ex05_neg_normal_form.cpython-313.pyc
 __pycache__/ex06_conj_normal_form.cpython-313.pyc
 __pycache__/
+.venv/
 
