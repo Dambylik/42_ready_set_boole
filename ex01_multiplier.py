@@ -5,22 +5,38 @@ U32_MAX = 2**32 - 1
 
 def multiplier(a: int, b: int) -> int:
     """
-    time: O(log n) proportional to the number of bits
-
+    Multiply two integers recursively using bit operations and adder().
+    
+    How it works:
+    - Look at the last bit of b: if it is 1, add a to the result
+    - Shift a left (double it) and b right (halve it)
+    - Repeat until b becomes 0
+    
+    Example: 2 * 3
+    - 3 in binary: 11 (has two 1-bits)
+    - So: 2*1 (first 1-bit) + 2*2 (second 1-bit) = 2 + 4 = 6
+    
     Complexity:
-    - Time: O(log n * k) where n is the value magnitude (number of bits)
-      and k is cost of `adder` (which is O(log n)). For typical analysis,
-      this gives O((log n)^2) in bit-operations. If `adder` is considered O(1)
-      for fixed-size integers (e.g. u32) then this is O(log n) iterations.
-    - Space: O(1) — uses a fixed number of variables.
+    - Time: O((log n)²) — loop runs log₂(n) times, each adder() also runs log₂(n) times
+    - Space: O((log n)²) — memory stacks up from both loops together
     """
-    result = 0
-    while b!= 0:
-        if (b & 1) == 1:
-            result = adder(result, a)
-        a = (a << 1)
-        b = b >> 1
-    return result
+    # Base case: if b is 0, multiplication is done
+    if b == 0:
+        return 0
+    
+    # Check if the last bit of b is 1
+    last_bit_is_one = (b & 1) == 1
+    
+    # Prepare for next recursion: shift a left (×2) and b right (÷2)
+    a_shifted_left = a << 1
+    b_shifted_right = b >> 1
+    
+    if last_bit_is_one:
+        # If last bit is 1: add `a` to result of next multiplication
+        return adder(a, multiplier(a_shifted_left, b_shifted_right))
+    else:
+        # If last bit is 0: skip and continue to next recursion
+        return multiplier(a_shifted_left, b_shifted_right)
 
 
 def main():

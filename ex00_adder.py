@@ -3,15 +3,17 @@ U32_MAX = 2**32 - 1
 
 
 def adder(a: int, b: int) -> int:
-   """  time: O(1) fixed-size integers u32
-        space: O(1) uses fixed number of variables
+   """ 
+   Complexity:
+   - Time: O(log n) — runs as many times as there are bits in the number
+   - Space: O(log n) — memory stacks up in layers (one for each bit)
    """
-   while b!= 0:
-      sum_ = a ^ b
-      carry = (a & b) << 1
-      a = sum_
-      b = carry
-   return a
+   if b == 0:
+      return a
+   
+   sum_without_carry = a ^ b
+   bits_to_carry_forward = (a & b) << 1
+   return adder(sum_without_carry, bits_to_carry_forward)
 
 
 def main():
