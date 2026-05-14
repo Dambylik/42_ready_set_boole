@@ -5,38 +5,25 @@ U32_MAX = 2**32 - 1
 
 def multiplier(a: int, b: int) -> int:
     """
-    Multiply two integers recursively using bit operations and adder().
+    Multiplies 2 u32-bit integers using only bitwise operations.
     
-    How it works:
-    - Look at the last bit of b: if it is 1, add a to the result
-    - Shift a left (double it) and b right (halve it)
+    Algorithm: Binary multiplication via iterative bit shifting
+    - Check the least significant bit (LSB) of b: if it is 1, add a to result
+    - Left shift a (double it) and right shift b (halve it)
     - Repeat until b becomes 0
+    - This works because multiplying by binary digits is equivalent to shifting
     
-    Example: 2 * 3
-    - 3 in binary: 11 (has two 1-bits)
-    - So: 2*1 (first 1-bit) + 2*2 (second 1-bit) = 2 + 4 = 6
-    
-    Complexity:
-    - Time: O((log n)²) — loop runs log₂(n) times, each adder() also runs log₂(n) times
-    - Space: O((log n)²) — memory stacks up from both loops together
+    Complexity for fixed-width u32:
+    - Time: O(1) — loop runs at most 32 times fixed-width
+    - Space: O(1) — only uses constant variables
     """
-    # Base case: if b is 0, multiplication is done
-    if b == 0:
-        return 0
-    
-    # Check if the last bit of b is 1
-    last_bit_is_one = (b & 1) == 1
-    
-    # Prepare for next recursion: shift a left (×2) and b right (÷2)
-    a_shifted_left = a << 1
-    b_shifted_right = b >> 1
-    
-    if last_bit_is_one:
-        # If last bit is 1: add `a` to result of next multiplication
-        return adder(a, multiplier(a_shifted_left, b_shifted_right))
-    else:
-        # If last bit is 0: skip and continue to next recursion
-        return multiplier(a_shifted_left, b_shifted_right)
+    result = 0
+    while b != 0:
+        if (b & 1) == 1:  # check the least significant bit (LSB) of b: if it is 1, add a to result
+            result = adder(result, a)
+        a = a << 1  # Left shift a (double it)
+        b = b >> 1  # Right shift b (halve it)
+    return result
 
 
 def main():
@@ -57,10 +44,6 @@ def main():
     print(result)
 
 
-if __name__ == '__main__':
-    main()
-
-
 def test_1():
     assert multiplier(0, 0) == 0
     assert multiplier(1, 0) == 0
@@ -68,3 +51,7 @@ def test_1():
     assert multiplier(1, 1) == 1
     assert multiplier(1, 2) == 2
     assert multiplier(2, 2) == 4
+
+if __name__ == '__main__':
+    # test_1()
+    main()

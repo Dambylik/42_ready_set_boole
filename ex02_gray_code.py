@@ -22,9 +22,18 @@ def main():
     print(result)
 
 
-if __name__ == '__main__':
-    main()
+def test_2():
+    assert gray_code(0) == 0
+    assert gray_code(1) == 1
+    assert gray_code(2) == 3
+    assert gray_code(3) == 2
+    assert gray_code(4) == 6
+    assert gray_code(5) == 7
+    assert gray_code(6) == 5
+    assert gray_code(7) == 4
+    assert gray_code(8) == 12
 
-# tests = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
-# for t in tests:
-#    print(f"{t} -> {gray_code(int(t))}")
+
+if __name__ == '__main__':
+    # test_2()
+    main()

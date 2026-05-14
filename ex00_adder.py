@@ -4,16 +4,18 @@ U32_MAX = 2**32 - 1
 
 def adder(a: int, b: int) -> int:
    """ 
-   Complexity:
-   - Time: O(log n) — runs as many times as there are bits in the number
-   - Space: O(log n) — memory stacks up in layers (one for each bit)
-   """
-   if b == 0:
-      return a
+   Adds 2 u32-bit integers using bitwise operations without +/- operators.
    
-   sum_without_carry = a ^ b
-   bits_to_carry_forward = (a & b) << 1
-   return adder(sum_without_carry, bits_to_carry_forward)
+   Complexity :
+   - Time: O(1) — loop runs at most 32 times fixed-width
+   - Space: O(1) — only uses constant variables (no recursion)
+   """
+   while b!= 0:
+      sum_ = a ^ b
+      carry = (a & b) << 1
+      a = sum_
+      b = carry
+   return a
 
 
 def main():
@@ -33,14 +35,15 @@ def main():
     print(result)
     
 
-if __name__ == '__main__':
-    main()
-
-
-def test_0():
+def test_00():
     assert adder(0, 0) == 0
     assert adder(1, 0) == 1
     assert adder(0, 1) == 1
     assert adder(1, 1) == 2
     assert adder(1, 2) == 3
     assert adder(2, 2) == 4
+
+
+if __name__ == '__main__':
+    test_00()
+    main()

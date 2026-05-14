@@ -1,117 +1,86 @@
 import sys
-
-class Node:
-    def __init__(self, value, left=None, right=None):
-        self.value = value
-        self.left = left
-        self.right = right
-
-
-def build_ast(expr: str):
-    """Build Abstract Syntax Tree from formula"""
-    stack = []
-
-    for char in expr:
-        if char == '0' or char == '1' or char.isupper():
-            stack.append(Node(char))
-
-        elif char == '!':
-            if len(stack) < 1:
-                raise ValueError("Invalid expression")
-            child = stack.pop()
-            stack.append(Node('!', right=child))
-
-        elif char in '&|^>=':
-            if len(stack) < 2:
-                raise ValueError("Invalid expression")
-            right = stack.pop()
-            left = stack.pop()
-            stack.append(Node(char, left, right))
-
-        else:
-            raise ValueError("Invalid character")
-
-    if len(stack) != 1:
-        raise ValueError("Invalid expression")
-    return stack[0]
-
-
-def print_tree(node, indent=0):
-    if node is None:
-        return
-    print("  " * indent + str(node.value))
-    print_tree(node.left, indent + 1)
-    print_tree(node.right, indent + 1)
+from print_ast_tree import build_ast, build_treelib_ast
 
 
 def boolean_eval(expr: str) -> bool:
-    """ Time: O(n) One pass, constant work per symbol
-        Space: O(n) (stack)"""
-    stack = []
+    """Evaluate an RPN propositional formula.
 
+    Complexity:
+    - Time: O(n) where n is len(expr)
+    """
+    stack = []
     for char in expr:
         if char == '0':
             stack.append(False)
         elif char == '1':
             stack.append(True)
-        
         elif char == '!':
-            if len(stack) < 1:
-                raise ValueError("To perform unary operation stack should have at least 1 value")
             a = stack.pop()
             stack.append(not a)
-        
-        elif char in '&|^>=':
-            if len(stack) < 2:
-                raise ValueError("To perform binary operation stack should have at least 2 values")
-            b = stack.pop()
-            a = stack.pop()
-            
-            if char == '&':
-                stack.append(a and b)
-            elif char == '|':
-                stack.append(a or b)
-            elif char == "^":
-                stack.append(a ^ b)
-            elif char == ">":
-                stack.append((not a) or b)
-            elif char == "=":
-                stack.append(a == b)
-        else:
-            raise ValueError("Invalid character")
-    
-    if len(stack) != 1:
-        raise ValueError("invalid RPN (two operands, no operator)")
+        elif char == '&':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a and b)
+        elif char == '|':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a or b)
+        elif char == '^':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a != b)
+        elif char == '>':
+            b, a = stack.pop(), stack.pop()
+            stack.append(not a or b)
+        elif char == '=':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a == b)
     return stack[0]
 
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python ex03_boolean_evaluation.py 'expression'")
-        sys.exit(1)
+        print("Usage: python3 ex03_boolean_evaluation.py <expression>")
+        return
     
-    allowed = set("01!&|^>=")
     expr = sys.argv[1]
     try:
-        for char in expr:
-            if char not in allowed:
-                raise ValueError("Invalid character")
-
         result = boolean_eval(expr)
-        print("RPN eval:", result)
-        ast_tree = build_ast(expr)
-        print("\nAST:")
-        print_tree(ast_tree)
-
-    except ValueError as e:
-        print("Error: ", e)
-        sys.exit(1)
-
+        print(f"\nEvaluation result: {result}")
+        ast_root = build_ast(expr)
+        binarytree_root = build_treelib_ast(ast_root)
+        print("AST tree:")
+        binarytree_root.pprint()
+    except Exception as e:
+        print(f"Error: {e}")
 
 
-if __name__ == '__main__':
+def test_03():
+    assert boolean_eval("0!") is True
+    assert boolean_eval("1!") is False
+    assert boolean_eval("00|") is False
+    assert boolean_eval("10|") is True
+    assert boolean_eval("01|") is True
+    assert boolean_eval("11|") is True
+    assert boolean_eval("10&") is False
+    assert boolean_eval("11&") is True
+    assert boolean_eval("11^") is False
+    assert boolean_eval("10^") is True
+    assert boolean_eval("00>") is True
+    assert boolean_eval("01>") is True
+    assert boolean_eval("10>") is False
+    assert boolean_eval("11>") is True
+    assert boolean_eval("00=") is True
+    assert boolean_eval("11=") is True
+    assert boolean_eval("10=") is False
+    assert boolean_eval("01=") is False
+
+    assert boolean_eval("11&0|") is True
+    assert boolean_eval("10&1|") is True
+    assert boolean_eval("11&1|") is True
+    assert boolean_eval("11&1|1^") is False
+    assert boolean_eval("01&1|1=") is True
+    assert boolean_eval("01&1&1&") is False
+    assert boolean_eval("0111&&&") is False
+
+
+if __name__ == "__main__":
+    test_03()
     main()
-
-# tests = ["10&", "10|", "11>", "10=", "1011||="]
-# for t in tests:
-#    print(f"{t} -> {boolean_eval(t)}")
