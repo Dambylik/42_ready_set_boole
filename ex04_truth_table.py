@@ -1,32 +1,5 @@
 import sys
-
-
-def boolean_eval(expr: str) -> bool:
-    stack = []
-    for char in expr:
-        if char == '0':
-            stack.append(False)
-        elif char == '1':
-            stack.append(True)
-        elif char == '!':
-            a = stack.pop()
-            stack.append(not a)
-        elif char == '&':
-            b, a = stack.pop(), stack.pop()
-            stack.append(a and b)
-        elif char == '|':
-            b, a = stack.pop(), stack.pop()
-            stack.append(a or b)
-        elif char == '^':
-            b, a = stack.pop(), stack.pop()
-            stack.append(a != b)
-        elif char == '>':
-            b, a = stack.pop(), stack.pop()
-            stack.append(not a or b)
-        elif char == '=':
-            b, a = stack.pop(), stack.pop()
-            stack.append(a == b)
-    return stack[0]
+from ex03_boolean_evaluation import boolean_eval
 
 
 def print_truth_table(formula: str):
@@ -46,6 +19,7 @@ def print_truth_table(formula: str):
     for i in range(2**n):
         validation_dict = {}
         for j, letter in enumerate(letters):
+            # Extract the bit for this variable from the row index i.
             bit = (i >> (n - 1 - j)) & 1
             validation_dict[letter] = str(bit)
 
@@ -94,9 +68,9 @@ def main():
         print_truth_table(formula)
     except ValueError as e:
         print("Error: ", e)
-        # sys.exit(1)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    test_04()
-    # main()
+    # test_04()
+    main()
