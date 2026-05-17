@@ -1,8 +1,42 @@
 import sys
-from ex03_boolean_evaluation import boolean_eval
+
+
+def boolean_eval(expr: str) -> bool:
+    stack = []
+    for char in expr:
+        if char == '0':
+            stack.append(False)
+        elif char == '1':
+            stack.append(True)
+        elif char == '!':
+            a = stack.pop()
+            stack.append(not a)
+        elif char == '&':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a and b)
+        elif char == '|':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a or b)
+        elif char == '^':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a != b)
+        elif char == '>':
+            b, a = stack.pop(), stack.pop()
+            stack.append(not a or b)
+        elif char == '=':
+            b, a = stack.pop(), stack.pop()
+            stack.append(a == b)
+    return stack[0]
 
 
 def print_truth_table(formula: str):
+    """Print the full truth table for an RPN formula.
+
+        Complexity:
+        - Time: O(n * 2^n), where n is the number of distinct variables.
+            The 2^n term comes from enumerating every possible assignment,
+            and each row requires building and evaluating the formula.
+    """
     letters = sorted(set(char for char in formula if char.isupper()))
     n = len(letters)
 
@@ -20,6 +54,30 @@ def print_truth_table(formula: str):
         row = [validation_dict[l] for l in letters]
         
         print('| ' + ' | '.join(row) + ' | ' + str(int(result)) + ' |')
+
+
+def test_04():
+    formulas = (
+        'AB&C|',
+        'AB&C|D|',
+
+        'A',
+        'A!',
+        'AB|',
+        'AB&',
+        'AB^',
+        'AB>',
+        'AB=',
+        'AA=',
+        'ABC==',
+        'AB>C>',
+        'AB>A>A>',
+    )
+
+    for formula in formulas:
+        print(f'Formula: {formula}')
+        print_truth_table(formula)
+        print()
         
 
 def main():
@@ -36,13 +94,9 @@ def main():
         print_truth_table(formula)
     except ValueError as e:
         print("Error: ", e)
-        sys.exit(1)
+        # sys.exit(1)
 
 
 if __name__ == '__main__':
-    main()
-
-# tests = ["AB&C|", "AB&C|D|"]
-# for t in tests:
-#    print(f"\nFormula: {t}")
-#    print_truth_table(t)
+    test_04()
+    # main()
