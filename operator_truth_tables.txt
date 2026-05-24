@@ -66,14 +66,22 @@ EQUIVALENCE (=) = Logical equivalence
 
 "------------------------------------------------------------------"
 
-Negation Normal Form
+Negation Normal Form formulas follow two strict rules:
 
+1. Negations (!) apply only to variables: 
+!(A & B) is not in NNF, but !A | !B is in NNF.
+
+2. The only allowed operators connecting the variables are AND (&) and OR (|).
+
+In Reverse Polish Notation (RPN), this means the negation operator ! must immediately follow a variable (e.g., A!B!|).
+
+Rules :
 1. Double Negation Elimination:
    !!A → A
 
 2. De Morgan's Laws:
-   !(A & B) → !A | !B
-   !(A | B) → !A & !B
+   NOT (A AND B) becomes (NOT A) OR (NOT B) -> !(A & B) → !A | !B
+   NOT (A OR B) becomes (NOT A) AND (NOT B) -> !(A | B) → !A & !B
 
 3. Implication Elimination:
    A > B → !A | B
@@ -86,9 +94,24 @@ Negation Normal Form
 
 "------------------------------------------------------------------"
 
-Conjunctive Normal Form
+Conjunctive Normal Form is a "product of sums" or an "AND of ORs".
+
+To be in CNF, a formula must meet these strict criteria:
+
+1. It is a series of groups connected entirely by AND (&) operators.
+
+2. Inside each group, elements are connected entirely by OR (|) operators.
+
+3. Negations (!) can only sit directly next to a variable.
+
+A group of variables connected by ORs is called a clause. So, a CNF formula is just a bunch of clauses chained together by ANDs.
 
 1. Distributive Law:
    A | (B & C) → (A | B) & (A | C)
    This is applied recursively until all ORs are inside, ANDs are outside.
 
+In Reverse Polish Notation (RPN), every conjunction (&) must be located at the end of the formula.
+
+Example Breakdowns:
+- AB|CD|& is in CNF. (Clause 1: A|B, Clause 2: C|D, joined by & at the end).
+- AB&CD|& is not in CNF because the first group uses an & inside it.

@@ -1,11 +1,16 @@
 import sys
-from ex03_boolean_evaluation import build_ast, Node, print_tree
+from print_ast_tree import build_ast, Node, build_treelib_ast
+from ex03_boolean_evaluation import boolean_eval
 
 
 def to_nnf(node: Node) -> Node:
-    """Convert AST to Negation Normal Form"""
+    """Convert AST to Negation Normal Form.
+    Ensures that negations only apply to variables by pushing
+    `!` inward using De Morgan's laws and eliminating
+    implications/equivalences/xor.
+    """
 
-    if node.left is None and node.right is None:
+    if node.left is None and node.right is None: #for 'AB&!' It's not a leaf node (it has children A and B).
         return node
 
     if node.value == '!':
@@ -21,8 +26,8 @@ def to_nnf(node: Node) -> Node:
             return to_nnf(Node('&', Node('!', right=child.left), Node('!', right=child.right)))
         return Node('!', right=child)
 
-    left = to_nnf(node.left) if node.left else None
-    right = to_nnf(node.right) if node.right else None
+    left = to_nnf(node.left) if node.left else None # Evaluates 'A' -> returns node 'A'
+    right = to_nnf(node.right) if node.right else None # Evaluates 'B' -> returns node 'B'
 
     if node.value == '>':
         return to_nnf(Node('|', Node('!', right=left), right))
@@ -37,11 +42,11 @@ def to_nnf(node: Node) -> Node:
         right_and = Node('&', Node('!', right=left), right)
         return to_nnf(Node('|', left_and, right_and))
 
-    return Node(node.value, left, right)
+    return Node(node.value, left, right) #It returns a clean & node with A and B attached.
 
 
 def ast_to_rpn(node: Node) -> str:
-    """Convert AST NNF back to Reverse Polish Notation"""
+    """Convert AST (NNF) back to Reverse Polish Notation."""
     if node is None:
         return ""
     left = ast_to_rpn(node.left)
@@ -51,11 +56,92 @@ def ast_to_rpn(node: Node) -> str:
 
 
 def negation_normal_form(formula: str) -> str:
+    """Return the Negation Normal Form of an RPN formula as RPN string.
+    """
     root = build_ast(formula)
-    # print_tree(root)
+    # binarytree_root = build_treelib_ast(root)
+    # print("AST tree:")
+    # binarytree_root.pprint()
     nnf_root = to_nnf(root)
-    # print_tree(nnf_root)
+    # binarytree_root = build_treelib_ast(nnf_root)
+    # print("AST NNF tree:")
+    # binarytree_root.pprint()
     return ast_to_rpn(nnf_root)
+
+
+def get_truth_values(formula: str):
+    """Extract truth values for a formula.
+    Returns (letters, results) where results[i] is the Boolean result for assignment i.
+    """
+    letters = sorted(set(char for char in formula if char.isupper()))
+    n = len(letters)
+    results = []
+
+    for i in range(2**n):
+        validation_dict = {}
+        for j, letter in enumerate(letters):
+            # Extract the bit for this variable from the row index i.
+            bit = (i >> (n - 1 - j)) & 1
+            validation_dict[letter] = str(bit)
+
+        expr_eval = ''.join(validation_dict.get(c, c) for c in formula)
+        result = boolean_eval(expr_eval)
+        results.append(result)
+
+    return letters, results
+
+
+def same_truth_table(formula: str, convert_func=None) -> bool:
+    """Compare truth tables for `formula` and its converted form.
+    Args:
+        formula: The input formula
+        convert_func: The conversion function to apply (default: negation_normal_form)
+    Returns True if they are identical, False otherwise.
+    """
+    if convert_func is None:
+        convert_func = negation_normal_form
+    converted = convert_func(formula)
+    _, orig_results = get_truth_values(formula)
+    _, converted_results = get_truth_values(converted)
+    return orig_results == converted_results
+
+
+def test_05():
+    formulas = [
+        'A!B!|',
+        'A!B!&',
+        'A!B|',
+        'AB&A!B!&|',
+        'A!B!&C!|',
+
+        'A',
+        'A!',
+        'AB&!',
+        'AB|!',
+        'AB>!',
+        'AB=!',
+
+        'ABC||',
+        'ABC||!',
+        'ABC|&',
+        'ABC&|',
+        'ABC&|!',
+        'ABC^^',
+        'ABC>>'
+    ]
+    all_ok = True
+    for f in formulas:
+        print(f'Formula: {f}')
+        try:
+            nnf = negation_normal_form(f)
+            print('NNF:', nnf)
+        except Exception as e:
+            print('  Error converting to NNF:', e)
+            all_ok = False
+        equiv = same_truth_table(f)
+        print(f"Truth tables equivalent: {equiv}")
+        print()
+    return all_ok
 
 
 def main():
@@ -64,17 +150,21 @@ def main():
         sys.exit(1)
 
     formula = sys.argv[1]
+    allowed_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZ!&|^>=')
     try:
+        for char in formula:
+            if char not in allowed_chars:
+                raise ValueError("character is not allowed")
         result = negation_normal_form(formula)
-        print(result)
+        print(f"Formula: {formula}")
+        print(f"NNF: {result}")
+        equiv = same_truth_table(formula)
+        print(f"Truth tables equivalent: {equiv}")
     except ValueError as e:
-        print("Error:", e)
-        sys.exit(1) 
+        print("Error: ", e)
+        sys.exit(1)
+
 
 if __name__ == "__main__":
-    main()
-
-
-# tests = ["AB&!", "AB|!", "AB>", "AB=", "AB|C&!"]
-# for t in tests:
-#    print(f"{t} -> {negation_normal_form(t)}")       
+    test_05()
+    # main()
