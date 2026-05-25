@@ -115,3 +115,23 @@ In Reverse Polish Notation (RPN), every conjunction (&) must be located at the e
 Example Breakdowns:
 - AB|CD|& is in CNF. (Clause 1: A|B, Clause 2: C|D, joined by & at the end).
 - AB&CD|& is not in CNF because the first group uses an & inside it.
+
+
+"------------------------------------------------------------------"
+
+
+SAT stands for Satisfiability - determine if a given logic formula can ever be True.
+
+Satisfiable: There is at least one combination of variable assignments (True/False) that makes the entire formula evaluate to True
+
+Unsatisfiable: No matter what values you give to the variables, the formula always evaluates to False
+
+
+"------------------------------------------------------------------"
+
+
+Powerset of a set A is the set of all possible subsets you can create from the elements of A. 
+This includes:
+- The empty set (a subset with zero elements).
+- Singletons (subsets with exactly one element).
+- The original set itself.

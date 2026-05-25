@@ -10,22 +10,20 @@ def print_truth_table(formula: str):
             The 2^n term comes from enumerating every possible assignment,
             and each row requires building and evaluating the formula.
     """
-    letters = sorted(set(char for char in formula if char.isupper()))
-    n = len(letters)
+    variables = sorted(set(char for char in formula if char.isupper()))
+    n = len(variables)
 
-    print('| ' + ' | '.join(letters) + ' | = |')
+    print('| ' + ' | '.join(variables) + ' | = |')
     print('|' + '---|' * (n + 1))
 
-    for i in range(2**n):
-        validation_dict = {}
-        for j, letter in enumerate(letters):
-            # Extract the bit for this variable from the row index i.
-            bit = (i >> (n - 1 - j)) & 1
-            validation_dict[letter] = str(bit)
+    for mask in range(1 << n):
+        assignment = {}
+        for i, var in enumerate(variables):
+            assignment[var] = str((mask >> i) & 1)
 
-        expr_eval = ''.join(validation_dict.get(c, c) for c in formula)
+        expr_eval = ''.join(assignment.get(c, c) for c in formula)
         result = boolean_eval(expr_eval)
-        row = [validation_dict[l] for l in letters]
+        row = [assignment[l] for l in variables]
         
         print('| ' + ' | '.join(row) + ' | ' + str(int(result)) + ' |')
 

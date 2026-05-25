@@ -73,22 +73,20 @@ def get_truth_values(formula: str):
     """Extract truth values for a formula.
     Returns (letters, results) where results[i] is the Boolean result for assignment i.
     """
-    letters = sorted(set(char for char in formula if char.isupper()))
-    n = len(letters)
+    variables = sorted(set(char for char in formula if char.isupper()))
+    n = len(variables)
     results = []
 
-    for i in range(2**n):
-        validation_dict = {}
-        for j, letter in enumerate(letters):
-            # Extract the bit for this variable from the row index i.
-            bit = (i >> (n - 1 - j)) & 1
-            validation_dict[letter] = str(bit)
+    for mask in range(1 << n):
+        assignment = {}
+        for i, var in enumerate(variables):
+            assignment[var] = str((mask >> i) & 1)
 
-        expr_eval = ''.join(validation_dict.get(c, c) for c in formula)
+        expr_eval = ''.join(assignment.get(c, c) for c in formula)
         result = boolean_eval(expr_eval)
         results.append(result)
 
-    return letters, results
+    return variables, results
 
 
 def same_truth_table(formula: str, convert_func=None) -> bool:
@@ -108,11 +106,11 @@ def same_truth_table(formula: str, convert_func=None) -> bool:
 
 def test_05():
     formulas = [
-        'A!B!|',
-        'A!B!&',
-        'A!B|',
-        'AB&A!B!&|',
-        'A!B!&C!|',
+        'AB&!',
+        'AB|!',
+        'AB>',
+        'AB=',
+        'AB|C&!',
 
         'A',
         'A!',

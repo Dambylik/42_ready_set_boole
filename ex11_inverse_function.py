@@ -4,8 +4,13 @@ U32_MAX = 2**32 - 1
 
 
 def reverse_map(n: float) -> tuple[int, int]:
-    if not (0.0 <= n <= 1.0):
-        raise ValueError("Input must be between 0.0 and 1.0")
+    """Inverse of map_coordinates: recover 2D coordinates from a normalized Morton code.
+    
+    Extracts the original x and y coordinates from a space-filling curve value
+    by deinterleaving the bits of the Morton code back into separate coordinates.
+    
+    Returns: Tuple (x, y) where x and y are in range [0, 65535].
+    """
 
     morton_code = int(round(n * U32_MAX))
     x = 0

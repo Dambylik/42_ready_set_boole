@@ -1,19 +1,42 @@
 import sys
 
+
 def powerset(set_: list[int]) -> list[list[int]]:
-    """Complexity : O(n * 2^n)"""
+    """Generate all subsets of the given set.
+    Space Complexity: O(2^n) - must store all 2^n subsets in the result list.
+    """
     elements = sorted(set(set_))
     n = len(elements)
     result = []
 
     for mask in range(1 << n):
         subset = []
-        for i in range(n):
+        for i, element in enumerate(elements):
             if (mask >> i) & 1:
-                subset.append(elements[i])
+                subset.append(element)
         result.append(subset)
 
     return result
+
+
+def test_08():
+    test_cases = [
+        ([], [[]]),
+        ([0], [[], [0]]),
+        ([0, 1], [[], [0], [1], [0, 1]]),
+        ([0, 1, 2], [[], [0], [1], [0, 1], [2], [0, 2], [1, 2], [0, 1, 2]]),
+
+        ([1, 2, 3], [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]),
+        ([1], [[], [1]]),
+        ([3, 1, 2], [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]),
+    ]
+    
+    for input_set, expected in test_cases:
+        result = powerset(input_set)
+        assert result == expected, f"powerset({input_set}) expected {expected}, got {result}"
+        print(f"powerset({input_set}): {len(result)} subsets -> {result}")
+    
+    return True
 
 
 def main():
@@ -32,8 +55,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # test_08()
     main()
-
-# tests = [[1, 2, 3]]
-# for t in tests:
-#    print(f"{t} -> {powerset(t)}")
